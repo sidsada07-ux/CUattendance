@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Attendance Hub Ultimate Edition</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --info: #0284c7;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 { margin-bottom: 5px; color: var(--primary); }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #e2e8f0;
+            color: var(--text);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: auto;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .overall-banner {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .metric-box { text-align: center; }
+        .metric-val { font-size: 2rem; font-weight: bold; }
+        .metric-lbl { font-size: 0.85rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .yellow-section { background-color: #fef08a; border: 2px dashed var(--warning); color: #713f12; }
+        .blue-section { background-color: #e0f2fe; border: 2px dashed var(--info); color: #0369a1; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+
+        button {
+            width: 100%; padding: 12px; background: var(--primary); color: white;
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        button:hover { background: #1d4ed8; }
+
+        .subject-card {
+            background: #f1f5f9; padding: 15px; border-radius: 8px;
+            margin-bottom: 15px; border-left: 6px solid #cbd5e1; position: relative;
+        }
+
+        .status-danger { border-left-color: var(--danger); background-color: #fef2f2; }
+        .status-warning { border-left-color: var(--warning); background-color: #fffbeb; }
+        .status-success { border-left-color: var(--success); background-color: #f0fdf4; }
+
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-top: 5px; }
+        .badge-danger { background-color: var(--danger); }
+        .badge-warning { background-color: var(--warning); }
+        .badge-success { background-color: var(--success); }
+
+        .alert-box { padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
+        .alert-danger { background: #fee2e2; color: #991b1b; }
+        .alert-info { background: #e0f2fe; color: #0369a1; }
+        .alert-success { background: #dcfce7; color: #166534; }
+
+        .action-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .edit-btn { color: var(--primary); }
+        .edit-btn:hover { background-color: #dbeafe; }
+        .delete-btn { color: var(--danger); }
+        .delete-btn:hover { background-color: #fee2e2; }
+
+        .inline-edit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-tracker-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .quick-tracker-row label {
+            margin: 0;
+            flex-grow: 1;
+            font-size: 0.85rem;
+        }
+
+        .quick-tracker-row input {
+            width: 70px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .quick-tracker-row button {
+            width: auto;
+            padding: 6px 16px;
+            font-size: 1.1rem;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #cbd5e1; }
+        th { background-color: #f1f5f9; }
+        .status-indicator { padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Campus Attendance Hub</h1>
+        <p>Comprehensive Institutional Compliance & Smart Target Calculator</p>
+    </header>
+
+    <div class="overall-banner">
+        <div class="metric-box">
+            <div class="metric-val" id="globalTotalConducted">0 hrs</div>
+            <div class="metric-lbl">Total Conducted Hours</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-val" id="globalTotalAttended">0 hrs</div>
+            <div class="metric-lbl">Total Attended Hours</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-val" id="globalPercentage">0.0%</div>
+            <div class="metric-lbl">Overall Attendance Status</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-val" id="globalStatus">N/A</div>
+            <div class="metric-lbl">ESE Status (Min 85%)</div>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Main Dashboard Modules</button>
+        <button class="tab-btn" onclick="switchTab('forms')">✍️ Form Exceptions Hub (Yellow/Blue)</button>
+        <button class="tab-btn" onclick="switchTab('policy')">📜 MSE vs ESE Compliance Rules</button>
+    </div>
+
+    <div id="dashboard" class="tab-content active">
+        
+        <div id="globalTargetAnalysisBox" class="card" style="display:none; background-color: #f8fafc; border-left: 6px solid var(--primary);"></div>
+
+        <div class="grid-2">
+            
+            <div>
+                <div class="card" style="border: 2px solid var(--primary);">
+                    <h3 style="color: var(--primary); margin-top:0;">⚡ Option A: Quick Overall Predictor</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin-top:-10px;">Use this if you don't want to add subject details and just want quick overall target metrics.</p>
+                    
+                    <div class="form-group">
+                        <label for="quickConducted">Total Macro Hours Conducted</label>
+                        <input type="number" id="quickConducted" placeholder="e.g., 200" oninput="calculateQuickMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAttended">Total Macro Hours Attended</label>
+                        <input type="number" id="quickAttended" placeholder="e.g., 160" oninput="calculateQuickMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label for="quickTarget">Custom Desired Target Percentage (%)</label>
+                        <input type="number" id="quickTarget" value="85" placeholder="85" oninput="calculateQuickMetrics()">
+                    </div>
+                    <div id="quickResultBox" style="margin-top: 15px;"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📥 Option B: Feed Course-Wise Ledger</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin-top:-10px;">Add individual tracks here to build an automated, saved schedule.</p>
+                    <div class="form-group">
+                        <label for="subName">Subject Label Name</label>
+                        <input type="text" id="subName" placeholder="e.g., Financial Management">
+                    </div>
+                    <div class="form-group">
+                        <label for="hoursConducted">Hours Conducted</label>
+                        <input type="number" id="hoursConducted" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="hoursPresent">Hours Attended Manually</label>
+                        <input type="number" id="hoursPresent" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="subTarget">Subject Desired Target (%)</label>
+                        <input type="number" id="subTarget" value="85" min="0" max="100">
+                    </div>
+                    <button onclick="addSubject()">Commit Course Data</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0;">Subject-Wise Tracking Matrix</h3>
+                        <div style="width:45%">
+                            <label style="font-size:0.75rem;">Global ESE Target (%)</label>
+                            <input type="number" id="globalTargetInput" value="85" min="0" max="100" oninput="saveAndRender()" style="padding:5px;">
+                        </div>
+                    </div>
+                    <hr style="border: 0.5px solid #e2e8f0; margin: 15px 0;">
+                    <div id="subjectList"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="forms" class="tab-content">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 900px; margin: 0 auto;">
+            
+            <div class="card yellow-section">
+                <h2>✍️ Log Approved Yellow Form Hours</h2>
+                <p>Applies to individual subject tracks for validated institutional duty leave or medical gaps.</p>
+                <hr style="border: 1px dashed var(--warning); margin-bottom: 15px;">
+                <div class="form-group">
+                    <label for="yellowSubject">Select Target Subject Track</label>
+                    <select id="yellowSubject"></select>
+                </div>
+                <div class="form-group">
+                    <label for="yellowHours">Sanctioned Hours to Credit</label>
+                    <input type="number" id="yellowHours" min="1" placeholder="e.g., 3">
+                </div>
+                <button onclick="applyYellowForm()" style="background: #a16207;">Apply Yellow Form Hours</button>
+            </div>
+
+            <div class="card blue-section">
+                <h2>📘 Log Institutional Blue Form Exemption</h2>
+                <p><strong>Rule Enforcement:</strong> Blue Forms strictly deal with overall aggregate shortage recovery for End Semester Exams (ESE) only. No structural bearing on Mid-Sem evaluations.</p>
+                <hr style="border: 1px dashed var(--info); margin-bottom: 15px;">
+                <div class="form-group">
+                    <label for="blueHours">Approved Overall Blue Form Exemption Hours</label>
+                    <input type="number" id="blueHours" min="1" placeholder="e.g., 12">
+                </div>
+                <button onclick="applyBlueForm()" style="background: #0284c7;">Apply Blue Form Package</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="policy" class="tab-content">
+        <div class="card">
+            <h2>Institutional Compliance Benchmarks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter Matrix</th>
+                        <th>Mid-Semester Exams (MSE / CIA 2)</th>
+                        <th>End-Semester Exams (ESE)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Policy Threshold</strong></td>
+                        <td><span class="status-indicator" style="background:#fef3c7; color:#b45309;">75% Subject-Wise Minimum</span></td>
+                        <td><span class="status-indicator" style="background:#fee2e2; color:#b91c1c;">85% OVERALL Aggregate Target</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enforcement Structure</strong></td>
+                        <td>Evaluated purely subject-by-subject. Falling short debars you from that specific exam.</td>
+                        <td>Evaluated as an average overall. Falling below 85% locks entry to final tests.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Exemption Recovery</strong></td>
+                        <td>Yellow forms map directly to specific class absences.</td>
+                        <td><strong>Blue Forms</strong> activate upon overall final aggregates dropping below 85%.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Initialize system core data parameters
+    let subjects = JSON.parse(localStorage.getItem('ultimateSubjectData')) || [
+        { name: "Corporate Finance", conducted: 40, present: 36, yellowHours: 0, target: 85, isEditing: false, addedCounter: 0, missedCounter: 0 },
+        { name: "Strategic Management", conducted: 45, present: 31, yellowHours: 0, target: 80, isEditing: false, addedCounter: 0, missedCounter: 0 }
+    ];
+    let globalBlueHours = parseInt(localStorage.getItem('ultimateBlueHours')) || 0;
+    let systemOverallTarget = parseInt(localStorage.getItem('ultimateGlobalTarget')) || 85;
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // MODULE A: OPTION A PROJECTION CALCULATOR LOGIC
+    function calculateQuickMetrics() {
+        const cond = parseInt(document.getElementById('quickConducted').value) || 0;
+        const att = parseInt(document.getElementById('quickAttended').value) || 0;
+        const target = parseFloat(document.getElementById('quickTarget').value) || 85;
+        const box = document.getElementById('quickResultBox');
+
+        if (cond <= 0) {
+            box.innerHTML = '';
+            return;
+        }
+
+        if (att > cond) {
+            box.innerHTML = `<div class="alert-box alert-danger">Error: Attended hours cannot exceed conducted.</div>`;
+            return;
+        }
+
+        const currentPct = ((att / cond) * 100).toFixed(1);
+        let dynamicResponse = '';
+
+        if (parseFloat(currentPct) >= target) {
+            let safeToSkip = 0;
+            let tempConducted = cond;
+            while (((att / (tempConducted + 1)) * 100) >= target) {
+                tempConducted++;
+                safeToSkip++;
+            }
+            dynamicResponse = `<div class="alert-box alert-success">
+                <strong>Status: Clear! Current Match: ${currentPct}%</strong><br>
+                You are hitting your ${target}% target. You can safely miss the next <b>${safeToSkip} classes</b> without dipping below.
+            </div>`;
+        } else {
+            let targetCatchup = 0;
+            let tempAtt = att;
+            let tempCond = cond;
+            while (((tempAtt / tempCond) * 100) < target) {
+                tempAtt++;
+                tempCond++;
+                targetCatchup++;
+            }
+            dynamicResponse = `<div class="alert-box alert-danger">
+                <strong>Status: Deficit! Current Match: ${currentPct}%</strong><br>
+                To reach your custom target of ${target}%, you must attend the next <b>${targetCatchup} consecutive hours</b>.
+            </div>`;
+        }
+        box.innerHTML = dynamicResponse;
+    }
+
+    function updateDropdowns() {
+        const yellowSelect = document.getElementById('yellowSubject');
+        if(!yellowSelect) return;
+        yellowSelect.innerHTML = '';
+        subjects.forEach((sub, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = sub.name;
+            yellowSelect.appendChild(opt);
+        });
+        document.getElementById('blueHours').value = globalBlueHours || '';
+        document.getElementById('globalTargetInput').value = systemOverallTarget;
+    }
+
+    // MODULE B: AUTOMATED LEDGER AND GLOBAL CALCULATOR PIPELINE
+    function processGlobalCalculations() {
+        let totalConducted = 0;
+        let totalAttended = 0;
+
+        subjects.forEach(sub => {
+            totalConducted += sub.conducted;
+            totalAttended += (sub.present + sub.yellowHours);
+        });
+
+        let adjustedAttended = totalAttended + globalBlueHours;
+        if(adjustedAttended > totalConducted) adjustedAttended = totalConducted;
+
+        const overallPercentage = totalConducted > 0 ? ((adjustedAttended / totalConducted) * 100).toFixed(1) : "0.0";
+
+        document.getElementById('globalTotalConducted').textContent = totalConducted + " hrs";
+        document.getElementById('globalTotalAttended').textContent = adjustedAttended + " hrs" + (globalBlueHours > 0 ? ` (+${globalBlueHours} Blue)` : '');
+        document.getElementById('globalPercentage').textContent = overallPercentage + "%";
+        
+        const statusEl = document.getElementById('globalStatus');
+        const targetAnalysisBox = document.getElementById('globalTargetAnalysisBox');
+
+        if(totalConducted > 0) {
+            targetAnalysisBox.style.display = "block";
+            let targetPct = parseFloat(document.getElementById('globalTargetInput').value) || 85;
+            let currentFloat = parseFloat(overallPercentage);
+
+            if(currentFloat >= targetPct) {
+                let skipCount = 0;
+                let tempCond = totalConducted;
+                while(((adjustedAttended / (tempCond + 1)) * 100) >= targetPct) {
+                    tempCond++;
+                    skipCount++;
+                }
+                statusEl.textContent = "ELIGIBLE";
+                statusEl.style.color = "var(--success)";
+                targetAnalysisBox.innerHTML = `
+                    <h4 style="margin:0 0 5px 0; color:var(--success);">🏆 Overall Institutional Standing: Compliant</h4>
+                    <p style="margin:0; font-size:0.9rem;">Your ledger aggregate is safely hitting your set global target of ${targetPct}%. You have an attendance cushion that allows you to safely skip up to <b>${skipCount} collective hours</b> across subjects.</p>
+                `;
+            } else {
+                let fixCount = 0;
+                let tempAtt = adjustedAttended;
+                let tempCond = totalConducted;
+                while(((tempAtt / tempCond) * 100) < targetPct) {
+                    tempAtt++; tempCond++; fixCount++;
+                }
+                statusEl.textContent = "SHORTAGE";
+                statusEl.style.color = "var(--danger)";
+                targetAnalysisBox.innerHTML = `
+                    <h4 style="margin:0 0 5px 0; color:var(--danger);">⚠️ Overall Institutional Standing: Action Required</h4>
+                    <p style="margin:0; font-size:0.9rem;">Your overall ledger average (${overallPercentage}%) falls below your target of ${targetPct}%. To correct this trajectory for the ESE, attend the next <b>${fixCount} consecutive lectures</b> across subjects, or process a <b>Blue Form</b> package worth <b>${fixCount} hours</b>.</p>
+                `;
+            }
+        } else {
+            targetAnalysisBox.style.display = "none";
+            statusEl.textContent = "N/A";
+        }
+    }
+
+    function calculateSubjectWiseMetrics() {
+        const listContainer = document.getElementById('subjectList');
+        if (subjects.length === 0) {
+            listContainer.innerHTML = `<p style="color: var(--gray); text-align: center; padding: 40px 0;">No subjects added to ledger yet. Feed subject data to populate.</p>`;
+            return;
+        }
+        listContainer.innerHTML = '';
+
+        subjects.forEach((sub, index) => {
+            const card = document.createElement('div');
+            
+            // IF INDIVIDUAL SUBJECT CARD IS IN EDIT MODE
+            if (sub.isEditing) {
+                card.className = "subject-card";
+                card.style.borderLeftColor = "var(--primary)";
+                card.innerHTML = `
+                    <h4 style="margin: 0 0 10px 0; color: var(--primary);">Editing Ledger: ${sub.name}</h4>
+                    
+                    <div class="quick-tracker-row">
+                        <label>Classes logged as <b>ATTENDED</b> during this edit state:</label>
+                        <input type="text" id="displayPlus-${index}" value="+${sub.addedCounter || 0}" readonly>
+                        <button onclick="applyQuickIncrement(${index}, 'plus')" style="background: var(--success); font-weight:bold;">+</button>
+                    </div>
+                    <div class="quick-tracker-row">
+                        <label>Classes logged as <b>MISSED</b> during this edit state:</label>
+                        <input type="text" id="displayMinus-${index}" value="-${sub.missedCounter || 0}" readonly>
+                        <button onclick="applyQuickIncrement(${index}, 'minus')" style="background: var(--danger); font-weight:bold;">-</button>
+                    </div>
+                    
+                    <hr style="border: 0.5px solid #cbd5e1; margin: 15px 0;">
+                    
+                    <label style="font-size:0.8rem; font-weight:bold; color:var(--gray);">Current Dynamic Ledger Totals:</label>
+                    <div class="inline-edit-grid">
+                        <div>
+                            <label style="font-size:0.75rem;">Conducted</label>
+                            <input type="number" id="editCond-${index}" value="${sub.conducted}" min="0" oninput="manualTotalChange(${index})">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Attended</label>
+                            <input type="number" id="editPres-${index}" value="${sub.present}" min="0" oninput="manualTotalChange(${index})">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Target %</label>
+                            <input type="number" id="editTarg-${index}" value="${sub.target || 85}" min="0" max="100">
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button onclick="closeInlineEdit(${index})" style="padding:6px; font-size:0.85rem; background:var(--primary);">Close Editor</button>
+                    </div>
+                `;
+            } else {
+                // RENDER NORMAL DISPLAY STATE MODE
+                const subjectTotalAttended = sub.present + sub.yellowHours;
+                const percentage = sub.conducted > 0 ? ((subjectTotalAttended / sub.conducted) * 100).toFixed(1) : 0;
+                const subTarget = sub.target || 85;
+                
+                let statusClass = 'status-success';
+                let statusBadge = `<span class="badge badge-success">Target (${subTarget}%) Matched</span>`;
+                let planMessage = '';
+
+                if (percentage < 75) {
+                    statusClass = 'status-danger';
+                    statusBadge = '<span class="badge badge-danger">MSE Shortage De-barred</span>';
+                } else if (percentage < subTarget) {
+                    statusClass = 'status-warning';
+                    statusBadge = `<span class="badge badge-warning">Below Target (${subTarget}%)</span>`;
+                }
+
+                if (percentage < subTarget) {
+                    let fixCount = 0;
+                    let tempAtt = subjectTotalAttended;
+                    let tempCond = sub.conducted;
+                    while (((tempAtt / tempCond) * 100) < subTarget) {
+                        tempAtt++; tempCond++; fixCount++;
+                    }
+                    planMessage += `• Attend the next <b>${fixCount} hrs</b> of this class to hit your ${subTarget}% subject target.<br>`;
+                } else {
+                    let skipCount = 0;
+                    let tempCond = sub.conducted;
+                    while (((subjectTotalAttended / (tempCond + 1)) * 100) >= subTarget) {
+                        tempCond++; skipCount++;
+                    }
+                    planMessage += `• Target clear. You can skip the next <b>${skipCount} hrs</b> of this class safely.<br>`;
+                }
+
+                if (percentage < 75) {
+                    let mseFix = 0;
+                    let tempAtt = subjectTotalAttended;
+                    let tempCond = sub.conducted;
+                    while (((tempAtt / tempCond) * 100) < 75) {
+                        tempAtt++; tempCond++; mseFix++;
+                    }
+                    planMessage += `<span style="color:var(--danger); font-weight:bold;">• CRITICAL: Attend next ${mseFix} lectures immediately to qualify for MSE!</span>`;
+                }
+
+                card.className = `subject-card ${statusClass}`;
+                card.innerHTML = `
+                    <div class="action-container">
+                        <button class="action-btn edit-btn" onclick="toggleInlineEdit(${index}, true)">✏️ Edit / Update</button>
+                        <button class="action-btn delete-btn" onclick="deleteSubject(${index})">✕ Remove</button>
+                    </div>
+                    <h4 style="margin: 0 0 5px 0; color: #0f172a; padding-right: 120px;">${sub.name}</h4>
+                    <p style="margin: 5px 0; font-size: 0.9rem; color: #475569;">
+                        Conducted: <b>${sub.conducted} hrs</b> | Attended: <b>${sub.present} hrs</b> 
+                        ${sub.yellowHours > 0 ? `| <span style="color: #a16207; font-weight:bold;">Yellow Form: +${sub.yellowHours} hrs</span>` : ''}
+                    </p>
+                    <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;">
+                        Subject Percentage: <span style="color: ${percentage < 75 ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
+                    </div>
+                    ${statusBadge}
+                    <div class="alert-box" style="background:#ffffff; border:1px solid #cbd5e1; margin-top:8px;">
+                        ${planMessage}
+                    </div>
+                `;
+            }
+            listContainer.appendChild(card);
+        });
+    }
+
+    function toggleInlineEdit(index, editState) {
+        subjects[index].isEditing = editState;
+        // Session counters safely zero-out when opening up a fresh editing instance state
+        subjects[index].addedCounter = 0;
+        subjects[index].missedCounter = 0;
+        calculateSubjectWiseMetrics();
+    }
+
+    // DIRECTLY APPLIES INCREMENTS TO DATA OBJECT ARRAY LEDGER WITH IMMEDIATE BACKEND PERSISTENCE SAVES
+    function applyQuickIncrement(index, actionType) {
+        if (actionType === 'plus') {
+            subjects[index].conducted += 1;
+            subjects[index].present += 1;
+            subjects[index].addedCounter = (subjects[index].addedCounter || 0) + 1;
+            document.getElementById(`displayPlus-${index}`).value = "+" + subjects[index].addedCounter;
+        } else if (actionType === 'minus') {
+            subjects[index].conducted += 1;
+            subjects[index].missedCounter = (subjects[index].missedCounter || 0) + 1;
+            document.getElementById(`displayMinus-${index}`).value = "-" + subjects[index].missedCounter;
+        }
+        
+        // Feed numbers cleanly directly through to text value parameters inside override form inputs
+        document.getElementById(`editCond-${index}`).value = subjects[index].conducted;
+        document.getElementById(`editPres-${index}`).value = subjects[index].present;
+        
+        // Write instantly down into storage memory
+        localStorage.setItem('ultimateSubjectData', JSON.stringify(subjects));
+        processGlobalCalculations();
+    }
+
+    function manualTotalChange(index) {
+        const condVal = parseInt(document.getElementById(`editCond-${index}`).value) || 0;
+        const presVal = parseInt(document.getElementById(`editPres-${index}`).value) || 0;
+        
+        subjects[index].conducted = condVal;
+        subjects[index].present = presVal;
+        
+        localStorage.setItem('ultimateSubjectData', JSON.stringify(subjects));
+        processGlobalCalculations();
+    }
+
+    function closeInlineEdit(index) {
+        const newTarg = parseInt(document.getElementById(`editTarg-${index}`).value) || 85;
+        const finalCond = parseInt(document.getElementById(`editCond-${index}`).value) || 0;
+        const finalPres = parseInt(document.getElementById(`editPres-${index}`).value) || 0;
+
+        if (finalPres > finalCond) {
+            alert("Input logic boundary error: Attended class size metrics cannot logistically exceed total conducted hours.");
+            return;
+        }
+
+        subjects[index].target = newTarg;
+        subjects[index].conducted = finalCond;
+        subjects[index].present = finalPres;
+        subjects[index].isEditing = false;
+
+        saveAndRender();
+    }
+
+    function addSubject() {
+        const name = document.getElementById('subName').value.trim();
+        const conducted = parseInt(document.getElementById('hoursConducted').value) || 0;
+        const present = parseInt(document.getElementById('hoursPresent').value) || 0;
+        const target = parseInt(document.getElementById('subTarget').value) || 85;
+
+        if (!name) return alert('Subject name label missing.');
+        if (present > conducted) return alert('Input error: Attended hours cannot exceed total classes conducted.');
+
+        const existingIndex = subjects.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+        if (existingIndex > -1) {
+            subjects[existingIndex].conducted = conducted;
+            subjects[existingIndex].present = present;
+            subjects[existingIndex].target = target;
+        } else {
+            subjects.push({ name, conducted, present, yellowHours: 0, target: target, isEditing: false, addedCounter: 0, missedCounter: 0 });
+        }
+
+        saveAndRender();
+        document.getElementById('subName').value = '';
+        document.getElementById('hoursConducted').value = '';
+        document.getElementById('hoursPresent').value = '';
+    }
+
+    function applyYellowForm() {
+        const index = document.getElementById('yellowSubject').value;
+        const yHours = parseInt(document.getElementById('yellowHours').value) || 0;
+        if (index === "" || yHours <= 0) return alert('Please enter valid structural data parameters.');
+        
+        subjects[index].yellowHours += yHours;
+        saveAndRender();
+        document.getElementById('yellowHours').value = '';
+        switchTab('dashboard');
+    }
+
+    function applyBlueForm() {
+        const bHours = parseInt(document.getElementById('blueHours').value) || 0;
+        globalBlueHours = bHours;
+        saveAndRender();
+        alert('Aggregate configurations saved successfully.');
+        switchTab('dashboard');
+    }
+
+    function deleteSubject(index) {
+        if(confirm("Confirm deletion of this tracking profile record?")) {
+            subjects.splice(index, 1);
+            saveAndRender();
+        }
+    }
+
+    function saveAndRender() {
+        systemOverallTarget = parseInt(document.getElementById('globalTargetInput').value) || 85;
+        localStorage.setItem('ultimateSubjectData', JSON.stringify(subjects));
+        localStorage.setItem('ultimateBlueHours', globalBlueHours);
+        localStorage.setItem('ultimateGlobalTarget', systemOverallTarget);
+        
+        updateDropdowns();
+        processGlobalCalculations();
+        calculateSubjectWiseMetrics();
+    }
+
+    // Core boot execution sequence runtime setup
+    saveAndRender();
+</script>
+
+</body>
+</html>
