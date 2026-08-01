@@ -37,6 +37,47 @@
 
         h1 { margin-bottom: 5px; color: var(--primary); }
 
+        /* Phase Toggle Switch Styling */
+        .phase-toggle-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 10px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .phase-toggle-btn {
+            background: #e2e8f0;
+            color: var(--text);
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .phase-toggle-btn.active-pre {
+            background: #f59e0b;
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .phase-toggle-btn.active-post {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+
         .nav-tabs {
             display: flex;
             justify-content: center;
@@ -97,10 +138,17 @@
             border-radius: 12px;
             margin-bottom: 25px;
             display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .metrics-grid {
+            display: flex;
             justify-content: space-around;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            width: 100%;
         }
 
         .metric-box { text-align: center; }
@@ -139,12 +187,18 @@
         .alert-info { background: #e0f2fe; color: #0369a1; }
         .alert-success { background: #dcfce7; color: #166534; }
 
-        .action-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .subject-header {
             display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .action-container {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .action-btn {
@@ -153,7 +207,7 @@
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: 600;
-            padding: 2px 5px;
+            padding: 4px 8px;
             border-radius: 4px;
         }
         .edit-btn { color: var(--primary); }
@@ -163,7 +217,7 @@
 
         .inline-edit-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-top: 10px;
             margin-bottom: 15px;
@@ -198,10 +252,59 @@
             font-size: 1.1rem;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 500px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #cbd5e1; }
         th { background-color: #f1f5f9; }
         .status-indicator { padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
+
+        /* Responsive Mobile Adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .metric-val {
+                font-size: 1.5rem;
+            }
+
+            .metric-lbl {
+                font-size: 0.75rem;
+            }
+
+            .inline-edit-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .matrix-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            .matrix-header > div {
+                width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -213,21 +316,30 @@
     </header>
 
     <div class="overall-banner">
-        <div class="metric-box">
-            <div class="metric-val" id="globalTotalConducted">0 hrs</div>
-            <div class="metric-lbl">Total Conducted Hours</div>
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="metric-val" id="globalTotalConducted">0 hrs</div>
+                <div class="metric-lbl">Total Conducted Hours</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-val" id="globalTotalAttended">0 hrs</div>
+                <div class="metric-lbl">Total Attended Hours</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-val" id="globalPercentage">0.0%</div>
+                <div class="metric-lbl">Overall Attendance Status</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-val" id="globalStatus">N/A</div>
+                <div class="metric-lbl">ESE Status (Min 85%)</div>
+            </div>
         </div>
-        <div class="metric-box">
-            <div class="metric-val" id="globalTotalAttended">0 hrs</div>
-            <div class="metric-lbl">Total Attended Hours</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-val" id="globalPercentage">0.0%</div>
-            <div class="metric-lbl">Overall Attendance Status</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-val" id="globalStatus">N/A</div>
-            <div class="metric-lbl">ESE Status (Min 85%)</div>
+
+        <!-- Academic Phase Toggle -->
+        <div class="phase-toggle-wrapper">
+            <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Phase:</span>
+            <button id="btnPreMSE" class="phase-toggle-btn active-pre" onclick="setPhase('pre')">⏳ Pre-MSE Mode</button>
+            <button id="btnPostMSE" class="phase-toggle-btn" onclick="setPhase('post')">🎓 Post-MSE Mode</button>
         </div>
     </div>
 
@@ -288,7 +400,7 @@
 
             <div>
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="matrix-header" style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 style="margin:0;">Subject-Wise Tracking Matrix</h3>
                         <div style="width:45%">
                             <label style="font-size:0.75rem;">Global ESE Target (%)</label>
@@ -337,32 +449,34 @@
     <div id="policy" class="tab-content">
         <div class="card">
             <h2>Institutional Compliance Benchmarks</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parameter Matrix</th>
-                        <th>Mid-Semester Exams (MSE / CIA 2)</th>
-                        <th>End-Semester Exams (ESE)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Policy Threshold</strong></td>
-                        <td><span class="status-indicator" style="background:#fef3c7; color:#b45309;">75% Subject-Wise Minimum</span></td>
-                        <td><span class="status-indicator" style="background:#fee2e2; color:#b91c1c;">85% OVERALL Aggregate Target</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Enforcement Structure</strong></td>
-                        <td>Evaluated purely subject-by-subject. Falling short debars you from that specific exam.</td>
-                        <td>Evaluated as an average overall. Falling below 85% locks entry to final tests.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Exemption Recovery</strong></td>
-                        <td>Yellow forms map directly to specific class absences.</td>
-                        <td><strong>Blue Forms</strong> activate upon overall final aggregates dropping below 85%.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter Matrix</th>
+                            <th>Mid-Semester Exams (MSE / CIA 2)</th>
+                            <th>End-Semester Exams (ESE)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Policy Threshold</strong></td>
+                            <td><span class="status-indicator" style="background:#fef3c7; color:#b45309;">75% Subject-Wise Minimum</span></td>
+                            <td><span class="status-indicator" style="background:#fee2e2; color:#b91c1c;">85% OVERALL Aggregate Target</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enforcement Structure</strong></td>
+                            <td>Evaluated purely subject-by-subject. Falling short debars you from that specific exam.</td>
+                            <td>Evaluated as an average overall. Falling below 85% locks entry to final tests.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exemption Recovery</strong></td>
+                            <td>Yellow forms map directly to specific class absences.</td>
+                            <td><strong>Blue Forms</strong> activate upon overall final aggregates dropping below 85%.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -376,6 +490,25 @@
     ];
     let globalBlueHours = parseInt(localStorage.getItem('ultimateBlueHours')) || 0;
     let systemOverallTarget = parseInt(localStorage.getItem('ultimateGlobalTarget')) || 85;
+    let currentPhase = localStorage.getItem('ultimatePhase') || 'pre'; // 'pre' or 'post'
+
+    function setPhase(phase) {
+        currentPhase = phase;
+        localStorage.setItem('ultimatePhase', phase);
+        
+        const btnPre = document.getElementById('btnPreMSE');
+        const btnPost = document.getElementById('btnPostMSE');
+
+        if (phase === 'pre') {
+            btnPre.className = "phase-toggle-btn active-pre";
+            btnPost.className = "phase-toggle-btn";
+        } else {
+            btnPre.className = "phase-toggle-btn";
+            btnPost.className = "phase-toggle-btn active-post";
+        }
+
+        calculateSubjectWiseMetrics();
+    }
 
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -566,7 +699,8 @@
                 let statusBadge = `<span class="badge badge-success">Target (${subTarget}%) Matched</span>`;
                 let planMessage = '';
 
-                if (percentage < 75) {
+                // Phase-dependent status evaluation
+                if (currentPhase === 'pre' && percentage < 75) {
                     statusClass = 'status-danger';
                     statusBadge = '<span class="badge badge-danger">MSE Shortage De-barred</span>';
                 } else if (percentage < subTarget) {
@@ -574,6 +708,7 @@
                     statusBadge = `<span class="badge badge-warning">Below Target (${subTarget}%)</span>`;
                 }
 
+                // Standard target projection calculation
                 if (percentage < subTarget) {
                     let fixCount = 0;
                     let tempAtt = subjectTotalAttended;
@@ -591,7 +726,8 @@
                     planMessage += `• Target clear. You can skip the next <b>${skipCount} hrs</b> of this class safely.<br>`;
                 }
 
-                if (percentage < 75) {
+                // Add Pre-MSE specific critical alerts if applicable
+                if (currentPhase === 'pre' && percentage < 75) {
                     let mseFix = 0;
                     let tempAtt = subjectTotalAttended;
                     let tempCond = sub.conducted;
@@ -603,17 +739,19 @@
 
                 card.className = `subject-card ${statusClass}`;
                 card.innerHTML = `
-                    <div class="action-container">
-                        <button class="action-btn edit-btn" onclick="toggleInlineEdit(${index}, true)">✏️ Edit / Update</button>
-                        <button class="action-btn delete-btn" onclick="deleteSubject(${index})">✕ Remove</button>
+                    <div class="subject-header">
+                        <h4 style="margin: 0; color: #0f172a;">${sub.name}</h4>
+                        <div class="action-container">
+                            <button class="action-btn edit-btn" onclick="toggleInlineEdit(${index}, true)">✏️ Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteSubject(${index})">✕ Remove</button>
+                        </div>
                     </div>
-                    <h4 style="margin: 0 0 5px 0; color: #0f172a; padding-right: 120px;">${sub.name}</h4>
                     <p style="margin: 5px 0; font-size: 0.9rem; color: #475569;">
                         Conducted: <b>${sub.conducted} hrs</b> | Attended: <b>${sub.present} hrs</b> 
                         ${sub.yellowHours > 0 ? `| <span style="color: #a16207; font-weight:bold;">Yellow Form: +${sub.yellowHours} hrs</span>` : ''}
                     </p>
                     <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;">
-                        Subject Percentage: <span style="color: ${percentage < 75 ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
+                        Subject Percentage: <span style="color: ${ (currentPhase === 'pre' && percentage < 75) ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
                     </div>
                     ${statusBadge}
                     <div class="alert-box" style="background:#ffffff; border:1px solid #cbd5e1; margin-top:8px;">
@@ -740,6 +878,7 @@
         localStorage.setItem('ultimateBlueHours', globalBlueHours);
         localStorage.setItem('ultimateGlobalTarget', systemOverallTarget);
         
+        setPhase(currentPhase);
         updateDropdowns();
         processGlobalCalculations();
         calculateSubjectWiseMetrics();
