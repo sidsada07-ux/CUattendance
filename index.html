@@ -37,7 +37,6 @@
 
         h1 { margin-bottom: 5px; color: var(--primary); }
 
-        /* Phase Toggle Switch Styling */
         .phase-toggle-wrapper {
             display: flex;
             justify-content: center;
@@ -105,14 +104,9 @@
             color: white;
         }
 
-        .tab-content {
-            display: none;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .tab-content.active {
-            display: block;
-        }
-        
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr;
@@ -159,6 +153,8 @@
         .blue-section { background-color: #e0f2fe; border: 2px dashed var(--info); color: #0369a1; }
 
         .form-group { margin-bottom: 15px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; cursor: pointer; }
+        .checkbox-group input { width: auto; cursor: pointer; }
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
 
@@ -177,10 +173,11 @@
         .status-warning { border-left-color: var(--warning); background-color: #fffbeb; }
         .status-success { border-left-color: var(--success); background-color: #f0fdf4; }
 
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-top: 5px; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-top: 5px; margin-right: 5px; }
         .badge-danger { background-color: var(--danger); }
         .badge-warning { background-color: var(--warning); }
         .badge-success { background-color: var(--success); }
+        .badge-core { background-color: #8b5cf6; }
 
         .alert-box { padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
         .alert-danger { background: #fee2e2; color: #991b1b; }
@@ -195,21 +192,8 @@
             margin-bottom: 5px;
         }
 
-        .action-container {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
+        .action-container { display: flex; gap: 8px; flex-shrink: 0; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
         .edit-btn { color: var(--primary); }
         .edit-btn:hover { background-color: #dbeafe; }
         .delete-btn { color: var(--danger); }
@@ -217,7 +201,7 @@
 
         .inline-edit-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-top: 10px;
             margin-bottom: 15px;
@@ -234,76 +218,26 @@
             border: 1px solid #e2e8f0;
         }
 
-        .quick-tracker-row label {
-            margin: 0;
-            flex-grow: 1;
-            font-size: 0.85rem;
-        }
+        .quick-tracker-row label { margin: 0; flex-grow: 1; font-size: 0.85rem; }
+        .quick-tracker-row input { width: 70px; padding: 5px; text-align: center; }
+        .quick-tracker-row button { width: auto; padding: 6px 16px; font-size: 1.1rem; }
 
-        .quick-tracker-row input {
-            width: 70px;
-            padding: 5px;
-            text-align: center;
-        }
-
-        .quick-tracker-row button {
-            width: auto;
-            padding: 6px 16px;
-            font-size: 1.1rem;
-        }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 500px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #cbd5e1; }
         th { background-color: #f1f5f9; }
         .status-indicator { padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
 
-        /* Responsive Mobile Adjustments */
         @media (max-width: 640px) {
-            body {
-                padding: 12px;
-            }
-
-            .nav-tabs {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                width: 100%;
-            }
-
-            .metrics-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .metric-val {
-                font-size: 1.5rem;
-            }
-
-            .metric-lbl {
-                font-size: 0.75rem;
-            }
-
-            .inline-edit-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .matrix-header {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 10px;
-            }
-
-            .matrix-header > div {
-                width: 100% !important;
-            }
+            body { padding: 12px; }
+            .nav-tabs { flex-direction: column; }
+            .tab-btn { width: 100%; }
+            .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .metric-val { font-size: 1.5rem; }
+            .metric-lbl { font-size: 0.75rem; }
+            .inline-edit-grid { grid-template-columns: 1fr; }
+            .matrix-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px; }
+            .matrix-header > div { width: 100% !important; }
         }
     </style>
 </head>
@@ -333,9 +267,13 @@
                 <div class="metric-val" id="globalStatus">N/A</div>
                 <div class="metric-lbl">ESE Status (Min 85%)</div>
             </div>
+            <!-- Dynamic Attendance Marks Display for Core Subjects -->
+            <div class="metric-box" id="marksMetricBox" style="display: none;">
+                <div class="metric-val" id="globalTotalMarks" style="color: #facc15;">0 / 0 M</div>
+                <div class="metric-lbl">Core Attendance Marks</div>
+            </div>
         </div>
 
-        <!-- Academic Phase Toggle -->
         <div class="phase-toggle-wrapper">
             <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Phase:</span>
             <button id="btnPreMSE" class="phase-toggle-btn active-pre" onclick="setPhase('pre')">⏳ Pre-MSE Mode</button>
@@ -346,7 +284,7 @@
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Main Dashboard Modules</button>
         <button class="tab-btn" onclick="switchTab('forms')">✍️ Form Exceptions Hub (Yellow/Blue)</button>
-        <button class="tab-btn" onclick="switchTab('policy')">📜 MSE vs ESE Compliance Rules</button>
+        <button class="tab-btn" onclick="switchTab('policy')">📜 MSE vs ESE Compliance & Marks</button>
     </div>
 
     <div id="dashboard" class="tab-content active">
@@ -391,8 +329,16 @@
                         <input type="number" id="hoursPresent" min="0" placeholder="0">
                     </div>
                     <div class="form-group">
+                        <label for="maxHours">Total Course Hours (Optional)</label>
+                        <input type="number" id="maxHours" min="0" placeholder="e.g., 60 (Leave empty if unsure)">
+                    </div>
+                    <div class="form-group">
                         <label for="subTarget">Subject Desired Target (%)</label>
                         <input type="number" id="subTarget" value="85" min="0" max="100">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isCoreSubject">
+                        <label for="isCoreSubject" style="margin: 0;">Is this a Core Subject? (Eligible for attendance marks)</label>
                     </div>
                     <button onclick="addSubject()">Commit Course Data</button>
                 </div>
@@ -477,20 +423,50 @@
                     </tbody>
                 </table>
             </div>
+
+            <h2 style="margin-top: 30px;">Core Subject End-Sem Attendance Marks Policy</h2>
+            <p style="font-size: 0.9rem; color: var(--gray);">Calculated exclusively during Post-MSE phase for subjects marked as Core.</p>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attendance Percentage Tier</th>
+                            <th>Awarded Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>95% and above</td><td><strong>5 Marks</strong></td></tr>
+                        <tr><td>90% to 94.9%</td><td><strong>4 Marks</strong></td></tr>
+                        <tr><td>85% to 89.9%</td><td><strong>3 Marks</strong></td></tr>
+                        <tr><td>80% to 84.9%</td><td><strong>2 Marks</strong></td></tr>
+                        <tr><td>75% to 79.9%</td><td><strong>1 Mark</strong></td></tr>
+                        <tr><td>Below 75%</td><td><strong style="color: var(--danger);">0 Marks</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script>
-    // Initialize system core data parameters
     let subjects = JSON.parse(localStorage.getItem('ultimateSubjectData')) || [
-        { name: "Corporate Finance", conducted: 40, present: 36, yellowHours: 0, target: 85, isEditing: false, addedCounter: 0, missedCounter: 0 },
-        { name: "Strategic Management", conducted: 45, present: 31, yellowHours: 0, target: 80, isEditing: false, addedCounter: 0, missedCounter: 0 }
+        { name: "Corporate Finance", conducted: 40, present: 36, yellowHours: 0, target: 85, maxHours: 60, isCore: true, isEditing: false, addedCounter: 0, missedCounter: 0 },
+        { name: "Strategic Management", conducted: 45, present: 31, yellowHours: 0, target: 80, maxHours: null, isCore: false, isEditing: false, addedCounter: 0, missedCounter: 0 }
     ];
     let globalBlueHours = parseInt(localStorage.getItem('ultimateBlueHours')) || 0;
     let systemOverallTarget = parseInt(localStorage.getItem('ultimateGlobalTarget')) || 85;
-    let currentPhase = localStorage.getItem('ultimatePhase') || 'pre'; // 'pre' or 'post'
+    let currentPhase = localStorage.getItem('ultimatePhase') || 'pre';
+
+    // Attendance Marks Helper Logic
+    function getAttendanceMarks(percentage) {
+        if (percentage >= 95) return 5;
+        if (percentage >= 90) return 4;
+        if (percentage >= 85) return 3;
+        if (percentage >= 80) return 2;
+        if (percentage >= 75) return 1;
+        return 0;
+    }
 
     function setPhase(phase) {
         currentPhase = phase;
@@ -502,11 +478,14 @@
         if (phase === 'pre') {
             btnPre.className = "phase-toggle-btn active-pre";
             btnPost.className = "phase-toggle-btn";
+            document.getElementById('marksMetricBox').style.display = 'none';
         } else {
             btnPre.className = "phase-toggle-btn";
             btnPost.className = "phase-toggle-btn active-post";
+            document.getElementById('marksMetricBox').style.display = 'block';
         }
 
+        processGlobalCalculations();
         calculateSubjectWiseMetrics();
     }
 
@@ -517,18 +496,13 @@
         event.currentTarget.classList.add('active');
     }
 
-    // MODULE A: OPTION A PROJECTION CALCULATOR LOGIC
     function calculateQuickMetrics() {
         const cond = parseInt(document.getElementById('quickConducted').value) || 0;
         const att = parseInt(document.getElementById('quickAttended').value) || 0;
         const target = parseFloat(document.getElementById('quickTarget').value) || 85;
         const box = document.getElementById('quickResultBox');
 
-        if (cond <= 0) {
-            box.innerHTML = '';
-            return;
-        }
-
+        if (cond <= 0) { box.innerHTML = ''; return; }
         if (att > cond) {
             box.innerHTML = `<div class="alert-box alert-danger">Error: Attended hours cannot exceed conducted.</div>`;
             return;
@@ -541,8 +515,7 @@
             let safeToSkip = 0;
             let tempConducted = cond;
             while (((att / (tempConducted + 1)) * 100) >= target) {
-                tempConducted++;
-                safeToSkip++;
+                tempConducted++; safeToSkip++;
             }
             dynamicResponse = `<div class="alert-box alert-success">
                 <strong>Status: Clear! Current Match: ${currentPct}%</strong><br>
@@ -553,9 +526,7 @@
             let tempAtt = att;
             let tempCond = cond;
             while (((tempAtt / tempCond) * 100) < target) {
-                tempAtt++;
-                tempCond++;
-                targetCatchup++;
+                tempAtt++; tempCond++; targetCatchup++;
             }
             dynamicResponse = `<div class="alert-box alert-danger">
                 <strong>Status: Deficit! Current Match: ${currentPct}%</strong><br>
@@ -579,14 +550,22 @@
         document.getElementById('globalTargetInput').value = systemOverallTarget;
     }
 
-    // MODULE B: AUTOMATED LEDGER AND GLOBAL CALCULATOR PIPELINE
     function processGlobalCalculations() {
         let totalConducted = 0;
         let totalAttended = 0;
+        let earnedMarksSum = 0;
+        let totalCoreSubjects = 0;
 
         subjects.forEach(sub => {
             totalConducted += sub.conducted;
             totalAttended += (sub.present + sub.yellowHours);
+
+            if (sub.isCore) {
+                totalCoreSubjects++;
+                const subTotalAttended = sub.present + sub.yellowHours;
+                const subPct = sub.conducted > 0 ? (subTotalAttended / sub.conducted) * 100 : 0;
+                earnedMarksSum += getAttendanceMarks(subPct);
+            }
         });
 
         let adjustedAttended = totalAttended + globalBlueHours;
@@ -598,6 +577,10 @@
         document.getElementById('globalTotalAttended').textContent = adjustedAttended + " hrs" + (globalBlueHours > 0 ? ` (+${globalBlueHours} Blue)` : '');
         document.getElementById('globalPercentage').textContent = overallPercentage + "%";
         
+        if (currentPhase === 'post') {
+            document.getElementById('globalTotalMarks').textContent = `${earnedMarksSum} / ${totalCoreSubjects * 5} M`;
+        }
+
         const statusEl = document.getElementById('globalStatus');
         const targetAnalysisBox = document.getElementById('globalTargetAnalysisBox');
 
@@ -610,8 +593,7 @@
                 let skipCount = 0;
                 let tempCond = totalConducted;
                 while(((adjustedAttended / (tempCond + 1)) * 100) >= targetPct) {
-                    tempCond++;
-                    skipCount++;
+                    tempCond++; skipCount++;
                 }
                 statusEl.textContent = "ELIGIBLE";
                 statusEl.style.color = "var(--success)";
@@ -650,7 +632,6 @@
         subjects.forEach((sub, index) => {
             const card = document.createElement('div');
             
-            // IF INDIVIDUAL SUBJECT CARD IS IN EDIT MODE
             if (sub.isEditing) {
                 card.className = "subject-card";
                 card.style.borderLeftColor = "var(--primary)";
@@ -684,22 +665,29 @@
                             <label style="font-size:0.75rem;">Target %</label>
                             <input type="number" id="editTarg-${index}" value="${sub.target || 85}" min="0" max="100">
                         </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Max Course Hours (Optional)</label>
+                            <input type="number" id="editMax-${index}" value="${sub.maxHours || ''}" placeholder="Optional" min="0">
+                        </div>
+                    </div>
+                    <div class="checkbox-group" style="margin-top: 10px;">
+                        <input type="checkbox" id="editCore-${index}" ${sub.isCore ? 'checked' : ''}>
+                        <label for="editCore-${index}" style="margin: 0; font-size: 0.85rem;">Is Core Subject?</label>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
                         <button onclick="closeInlineEdit(${index})" style="padding:6px; font-size:0.85rem; background:var(--primary);">Close Editor</button>
                     </div>
                 `;
             } else {
-                // RENDER NORMAL DISPLAY STATE MODE
                 const subjectTotalAttended = sub.present + sub.yellowHours;
                 const percentage = sub.conducted > 0 ? ((subjectTotalAttended / sub.conducted) * 100).toFixed(1) : 0;
                 const subTarget = sub.target || 85;
                 
                 let statusClass = 'status-success';
                 let statusBadge = `<span class="badge badge-success">Target (${subTarget}%) Matched</span>`;
+                let coreBadge = sub.isCore ? `<span class="badge badge-core">Core Subject</span>` : '';
                 let planMessage = '';
 
-                // Phase-dependent status evaluation
                 if (currentPhase === 'pre' && percentage < 75) {
                     statusClass = 'status-danger';
                     statusBadge = '<span class="badge badge-danger">MSE Shortage De-barred</span>';
@@ -708,7 +696,7 @@
                     statusBadge = `<span class="badge badge-warning">Below Target (${subTarget}%)</span>`;
                 }
 
-                // Standard target projection calculation
+                // Short-term ongoing class guidance
                 if (percentage < subTarget) {
                     let fixCount = 0;
                     let tempAtt = subjectTotalAttended;
@@ -726,7 +714,25 @@
                     planMessage += `• Target clear. You can skip the next <b>${skipCount} hrs</b> of this class safely.<br>`;
                 }
 
-                // Add Pre-MSE specific critical alerts if applicable
+                // Total course projection calculation (Optional Feature)
+                if (sub.maxHours && sub.maxHours > 0) {
+                    const reqAttended = Math.ceil((subTarget / 100) * sub.maxHours);
+                    const maxBunksAllowed = sub.maxHours - reqAttended;
+                    const bunksUsedSoFar = sub.conducted - subjectTotalAttended;
+                    const remainingBunks = maxBunksAllowed - bunksUsedSoFar;
+
+                    planMessage += `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; color: #1e293b;">`;
+                    planMessage += `<b>🏁 Full Course Planning (${sub.maxHours} Total Hours):</b><br>`;
+                    planMessage += `• Target requires attending at least <b>${reqAttended} / ${sub.maxHours} total hours</b>.<br>`;
+                    
+                    if (remainingBunks >= 0) {
+                        planMessage += `• You can bunk <b>${remainingBunks} more hours</b> in total across the rest of the semester safely.`;
+                    } else {
+                        planMessage += `<span style="color:var(--danger); font-weight:bold;">• Warning: You have exceeded the maximum bunk allowance for this entire course by ${Math.abs(remainingBunks)} hours!</span>`;
+                    }
+                    planMessage += `</div>`;
+                }
+
                 if (currentPhase === 'pre' && percentage < 75) {
                     let mseFix = 0;
                     let tempAtt = subjectTotalAttended;
@@ -735,6 +741,14 @@
                         tempAtt++; tempCond++; mseFix++;
                     }
                     planMessage += `<span style="color:var(--danger); font-weight:bold;">• CRITICAL: Attend next ${mseFix} lectures immediately to qualify for MSE!</span>`;
+                }
+
+                let marksInfo = '';
+                if (currentPhase === 'post' && sub.isCore) {
+                    const earned = getAttendanceMarks(parseFloat(percentage));
+                    marksInfo = `<div style="font-size: 0.95rem; font-weight: bold; color: #6b21a8; margin-top: 4px;">
+                        🎯 Current Attendance Marks: ${earned} / 5 Marks
+                    </div>`;
                 }
 
                 card.className = `subject-card ${statusClass}`;
@@ -748,12 +762,15 @@
                     </div>
                     <p style="margin: 5px 0; font-size: 0.9rem; color: #475569;">
                         Conducted: <b>${sub.conducted} hrs</b> | Attended: <b>${sub.present} hrs</b> 
+                        ${sub.maxHours ? `| Total Course: <b>${sub.maxHours} hrs</b>` : ''}
                         ${sub.yellowHours > 0 ? `| <span style="color: #a16207; font-weight:bold;">Yellow Form: +${sub.yellowHours} hrs</span>` : ''}
                     </p>
                     <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;">
                         Subject Percentage: <span style="color: ${ (currentPhase === 'pre' && percentage < 75) ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
                     </div>
                     ${statusBadge}
+                    ${coreBadge}
+                    ${marksInfo}
                     <div class="alert-box" style="background:#ffffff; border:1px solid #cbd5e1; margin-top:8px;">
                         ${planMessage}
                     </div>
@@ -765,13 +782,11 @@
 
     function toggleInlineEdit(index, editState) {
         subjects[index].isEditing = editState;
-        // Session counters safely zero-out when opening up a fresh editing instance state
         subjects[index].addedCounter = 0;
         subjects[index].missedCounter = 0;
         calculateSubjectWiseMetrics();
     }
 
-    // DIRECTLY APPLIES INCREMENTS TO DATA OBJECT ARRAY LEDGER WITH IMMEDIATE BACKEND PERSISTENCE SAVES
     function applyQuickIncrement(index, actionType) {
         if (actionType === 'plus') {
             subjects[index].conducted += 1;
@@ -784,11 +799,9 @@
             document.getElementById(`displayMinus-${index}`).value = "-" + subjects[index].missedCounter;
         }
         
-        // Feed numbers cleanly directly through to text value parameters inside override form inputs
         document.getElementById(`editCond-${index}`).value = subjects[index].conducted;
         document.getElementById(`editPres-${index}`).value = subjects[index].present;
         
-        // Write instantly down into storage memory
         localStorage.setItem('ultimateSubjectData', JSON.stringify(subjects));
         processGlobalCalculations();
     }
@@ -808,6 +821,8 @@
         const newTarg = parseInt(document.getElementById(`editTarg-${index}`).value) || 85;
         const finalCond = parseInt(document.getElementById(`editCond-${index}`).value) || 0;
         const finalPres = parseInt(document.getElementById(`editPres-${index}`).value) || 0;
+        const maxH = parseInt(document.getElementById(`editMax-${index}`).value) || null;
+        const isCoreChecked = document.getElementById(`editCore-${index}`).checked;
 
         if (finalPres > finalCond) {
             alert("Input logic boundary error: Attended class size metrics cannot logistically exceed total conducted hours.");
@@ -817,6 +832,8 @@
         subjects[index].target = newTarg;
         subjects[index].conducted = finalCond;
         subjects[index].present = finalPres;
+        subjects[index].maxHours = maxH;
+        subjects[index].isCore = isCoreChecked;
         subjects[index].isEditing = false;
 
         saveAndRender();
@@ -826,7 +843,10 @@
         const name = document.getElementById('subName').value.trim();
         const conducted = parseInt(document.getElementById('hoursConducted').value) || 0;
         const present = parseInt(document.getElementById('hoursPresent').value) || 0;
+        const maxHoursVal = document.getElementById('maxHours').value;
+        const maxHours = maxHoursVal ? parseInt(maxHoursVal) : null;
         const target = parseInt(document.getElementById('subTarget').value) || 85;
+        const isCore = document.getElementById('isCoreSubject').checked;
 
         if (!name) return alert('Subject name label missing.');
         if (present > conducted) return alert('Input error: Attended hours cannot exceed total classes conducted.');
@@ -836,14 +856,18 @@
             subjects[existingIndex].conducted = conducted;
             subjects[existingIndex].present = present;
             subjects[existingIndex].target = target;
+            subjects[existingIndex].maxHours = maxHours;
+            subjects[existingIndex].isCore = isCore;
         } else {
-            subjects.push({ name, conducted, present, yellowHours: 0, target: target, isEditing: false, addedCounter: 0, missedCounter: 0 });
+            subjects.push({ name, conducted, present, yellowHours: 0, target, maxHours, isCore, isEditing: false, addedCounter: 0, missedCounter: 0 });
         }
 
         saveAndRender();
         document.getElementById('subName').value = '';
         document.getElementById('hoursConducted').value = '';
         document.getElementById('hoursPresent').value = '';
+        document.getElementById('maxHours').value = '';
+        document.getElementById('isCoreSubject').checked = false;
     }
 
     function applyYellowForm() {
@@ -884,7 +908,6 @@
         calculateSubjectWiseMetrics();
     }
 
-    // Core boot execution sequence runtime setup
     saveAndRender();
 </script>
 
