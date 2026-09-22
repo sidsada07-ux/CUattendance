@@ -15,6 +15,7 @@
             --card: #ffffff;
             --text: #1e293b;
             --gray: #64748b;
+            --purple: #8b5cf6;
         }
 
         body {
@@ -153,7 +154,7 @@
         .blue-section { background-color: #e0f2fe; border: 2px dashed var(--info); color: #0369a1; }
 
         .form-group { margin-bottom: 15px; }
-        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; cursor: pointer; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; }
         .checkbox-group input { width: auto; cursor: pointer; }
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
@@ -177,7 +178,8 @@
         .badge-danger { background-color: var(--danger); }
         .badge-warning { background-color: var(--warning); }
         .badge-success { background-color: var(--success); }
-        .badge-core { background-color: #8b5cf6; }
+        .badge-core { background-color: var(--purple); }
+        .badge-lca { background-color: #0284c7; }
 
         .alert-box { padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; font-weight: 500; }
         .alert-danger { background: #fee2e2; color: #991b1b; }
@@ -228,6 +230,24 @@
         th { background-color: #f1f5f9; }
         .status-indicator { padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
 
+        /* Grade Predictor Matrix Cards */
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .grade-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+        .grade-title { font-weight: bold; color: var(--primary); font-size: 0.9rem; }
+        .grade-target { font-size: 0.8rem; color: var(--gray); }
+        .grade-score { font-size: 1.1rem; font-weight: bold; margin-top: 4px; color: var(--text); }
+
         @media (max-width: 640px) {
             body { padding: 12px; }
             .nav-tabs { flex-direction: column; }
@@ -267,7 +287,6 @@
                 <div class="metric-val" id="globalStatus">N/A</div>
                 <div class="metric-lbl">ESE Status (Min 85%)</div>
             </div>
-            <!-- Dynamic Attendance Marks Display for Core Subjects -->
             <div class="metric-box" id="marksMetricBox" style="display: none;">
                 <div class="metric-val" id="globalTotalMarks" style="color: #facc15;">0 / 0 M</div>
                 <div class="metric-lbl">Core Attendance Marks</div>
@@ -283,10 +302,12 @@
 
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Main Dashboard Modules</button>
+        <button class="tab-btn" onclick="switchTab('marksTab')">🎯 ESE Marks Predictor</button>
         <button class="tab-btn" onclick="switchTab('forms')">✍️ Form Exceptions Hub (Yellow/Blue)</button>
-        <button class="tab-btn" onclick="switchTab('policy')">📜 MSE vs ESE Compliance & Marks</button>
+        <button class="tab-btn" onclick="switchTab('policy')">📜 Policy</button>
     </div>
 
+    <!-- TAB 1: MAIN DASHBOARD -->
     <div id="dashboard" class="tab-content active">
         
         <div id="globalTargetAnalysisBox" class="card" style="display:none; background-color: #f8fafc; border-left: 6px solid var(--primary);"></div>
@@ -337,8 +358,12 @@
                         <input type="number" id="subTarget" value="85" min="0" max="100">
                     </div>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="isCoreSubject">
-                        <label for="isCoreSubject" style="margin: 0;">Is this a Core Subject? (Eligible for attendance marks)</label>
+                        <input type="checkbox" id="isCoreSubject" onchange="syncCoreLcaCheckboxes('core')">
+                        <label for="isCoreSubject" style="margin: 0;">Is Core Subject?</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isLcaSubject" onchange="syncCoreLcaCheckboxes('lca')">
+                        <label for="isLcaSubject" style="margin: 0;">Is LCA (Learner Centric Approach)?</label>
                     </div>
                     <button onclick="addSubject()">Commit Course Data</button>
                 </div>
@@ -361,6 +386,41 @@
         </div>
     </div>
 
+    <!-- TAB 2: MARKS PREDICTOR TAB -->
+    <div id="marksTab" class="tab-content">
+        
+        <!-- Quick Manual Subject Entry Box for Marks Predictor -->
+        <div class="card" style="border: 2px solid var(--purple);">
+            <h3 style="color: var(--purple); margin-top:0;">➕ Add Subject Directly to Marks Predictor</h3>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-top:-10px;">
+                Want to calculate required ESE marks without filling attendance in Tab 1? Enter subject details here directly!
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                <div class="form-group" style="margin:0;">
+                    <label for="directSubName">Subject Name</label>
+                    <input type="text" id="directSubName" placeholder="e.g., Marketing Analytics">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label for="directSubCourseType">Course Type</label>
+                    <select id="directSubCourseType">
+                        <option value="core">Core Subject (CIA 1, MSE, CIA 3)</option>
+                        <option value="lca">LCA Subject (CIA 1, CIA 2)</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="addDirectSubjectForMarks()" style="margin-top: 15px; background: var(--purple);">+ Add Course to Predictor</button>
+        </div>
+
+        <div class="card">
+            <h2>🎯 ESE Required Marks Predictor</h2>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-top:-5px;">
+                Enter your internal CIA marks to see what you need out of 100 (or out of 50 for LCA) in the End Sem Exam to achieve each target letter grade.
+            </p>
+            <div id="marksPredictorContainer"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: FORM EXCEPTIONS HUB -->
     <div id="forms" class="tab-content">
         <div style="display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 900px; margin: 0 auto;">
             
@@ -392,6 +452,7 @@
         </div>
     </div>
 
+    <!-- TAB 4: POLICY TAB -->
     <div id="policy" class="tab-content">
         <div class="card">
             <h2>Institutional Compliance Benchmarks</h2>
@@ -424,8 +485,30 @@
                 </table>
             </div>
 
-            <h2 style="margin-top: 30px;">Core Subject End-Sem Attendance Marks Policy</h2>
-            <p style="font-size: 0.9rem; color: var(--gray);">Calculated exclusively during Post-MSE phase for subjects marked as Core.</p>
+            <h2 style="margin-top: 30px;">Grade Cutoffs & Criteria</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Grade Scale</th>
+                            <th>Marks Threshold (%)</th>
+                            <th>Status / Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>O</strong></td><td>80% and above</td><td>Outstanding</td></tr>
+                        <tr><td><strong>A+</strong></td><td>70% – 79.99%</td><td>Excellent</td></tr>
+                        <tr><td><strong>A</strong></td><td>60% – 69.99%</td><td>Very Good</td></tr>
+                        <tr><td><strong>B+</strong></td><td>55% – 59.99%</td><td>Good</td></tr>
+                        <tr><td><strong>B</strong></td><td>50% – 54.99%</td><td>Above Average</td></tr>
+                        <tr><td><strong>C</strong></td><td>45% – 49.99%</td><td>Average</td></tr>
+                        <tr><td><strong>P</strong></td><td>40% – 44.99%</td><td>Pass</td></tr>
+                        <tr><td><strong>F</strong></td><td>Below 40%</td><td><span style="color:var(--danger); font-weight:bold;">Fail / Re-appear</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 style="margin-top: 30px;">Attendance Marks Policy (5 Marks Weightage)</h2>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -451,14 +534,32 @@
 
 <script>
     let subjects = JSON.parse(localStorage.getItem('ultimateSubjectData')) || [
-        { name: "Corporate Finance", conducted: 40, present: 36, yellowHours: 0, target: 85, maxHours: 60, isCore: true, isEditing: false, addedCounter: 0, missedCounter: 0 },
-        { name: "Strategic Management", conducted: 45, present: 31, yellowHours: 0, target: 80, maxHours: null, isCore: false, isEditing: false, addedCounter: 0, missedCounter: 0 }
+        { 
+            name: "Corporate Finance", conducted: 40, present: 36, yellowHours: 0, target: 85, maxHours: 60, 
+            isCore: true, isLca: false, isEditing: false, addedCounter: 0, missedCounter: 0,
+            cia1: "", cia2: "", cia3: "", customAttMarks: "" 
+        },
+        { 
+            name: "LCA Workshop Track", conducted: 30, present: 28, yellowHours: 0, target: 80, maxHours: 40, 
+            isCore: true, isLca: true, isEditing: false, addedCounter: 0, missedCounter: 0,
+            cia1: "", cia2: "", cia3: "", customAttMarks: "" 
+        }
     ];
     let globalBlueHours = parseInt(localStorage.getItem('ultimateBlueHours')) || 0;
     let systemOverallTarget = parseInt(localStorage.getItem('ultimateGlobalTarget')) || 85;
     let currentPhase = localStorage.getItem('ultimatePhase') || 'pre';
 
-    // Attendance Marks Helper Logic
+    const GRADE_THRESHOLDS = [
+        { grade: 'O', min: 80 },
+        { grade: 'A+', min: 70 },
+        { grade: 'A', min: 60 },
+        { grade: 'B+', min: 55 },
+        { grade: 'B', min: 50 },
+        { grade: 'C', min: 45 },
+        { grade: 'P', min: 40 },
+        { grade: 'F', min: 0 }
+    ];
+
     function getAttendanceMarks(percentage) {
         if (percentage >= 95) return 5;
         if (percentage >= 90) return 4;
@@ -466,6 +567,22 @@
         if (percentage >= 80) return 2;
         if (percentage >= 75) return 1;
         return 0;
+    }
+
+    function syncCoreLcaCheckboxes(source) {
+        const coreBox = document.getElementById('isCoreSubject');
+        const lcaBox = document.getElementById('isLcaSubject');
+        if (source === 'lca' && lcaBox.checked) {
+            coreBox.checked = true;
+        }
+    }
+
+    function syncInlineCoreLcaCheckboxes(index, source) {
+        const coreBox = document.getElementById(`editCore-${index}`);
+        const lcaBox = document.getElementById(`editLca-${index}`);
+        if (source === 'lca' && lcaBox.checked) {
+            coreBox.checked = true;
+        }
     }
 
     function setPhase(phase) {
@@ -487,13 +604,19 @@
 
         processGlobalCalculations();
         calculateSubjectWiseMetrics();
+        renderMarksPredictor();
     }
 
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        
+        const tabs = document.querySelectorAll('.tab-btn');
+        if (tabId === 'dashboard') tabs[0].classList.add('active');
+        if (tabId === 'marksTab') tabs[1].classList.add('active');
+        if (tabId === 'forms') tabs[2].classList.add('active');
+        if (tabId === 'policy') tabs[3].classList.add('active');
     }
 
     function calculateQuickMetrics() {
@@ -564,7 +687,12 @@
                 totalCoreSubjects++;
                 const subTotalAttended = sub.present + sub.yellowHours;
                 const subPct = sub.conducted > 0 ? (subTotalAttended / sub.conducted) * 100 : 0;
-                earnedMarksSum += getAttendanceMarks(subPct);
+                
+                let attM = sub.customAttMarks !== "" && sub.customAttMarks !== null 
+                    ? parseFloat(sub.customAttMarks) 
+                    : getAttendanceMarks(subPct);
+                
+                earnedMarksSum += attM;
             }
         });
 
@@ -671,8 +799,12 @@
                         </div>
                     </div>
                     <div class="checkbox-group" style="margin-top: 10px;">
-                        <input type="checkbox" id="editCore-${index}" ${sub.isCore ? 'checked' : ''}>
+                        <input type="checkbox" id="editCore-${index}" ${sub.isCore ? 'checked' : ''} onchange="syncInlineCoreLcaCheckboxes(${index}, 'core')">
                         <label for="editCore-${index}" style="margin: 0; font-size: 0.85rem;">Is Core Subject?</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="editLca-${index}" ${sub.isLca ? 'checked' : ''} onchange="syncInlineCoreLcaCheckboxes(${index}, 'lca')">
+                        <label for="editLca-${index}" style="margin: 0; font-size: 0.85rem;">Is LCA Subject?</label>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
                         <button onclick="closeInlineEdit(${index})" style="padding:6px; font-size:0.85rem; background:var(--primary);">Close Editor</button>
@@ -682,13 +814,26 @@
                 const subjectTotalAttended = sub.present + sub.yellowHours;
                 const percentage = sub.conducted > 0 ? ((subjectTotalAttended / sub.conducted) * 100).toFixed(1) : 0;
                 const subTarget = sub.target || 85;
+                const isCoreNonLCA = sub.isCore && !sub.isLca;
                 
                 let statusClass = 'status-success';
                 let statusBadge = `<span class="badge badge-success">Target (${subTarget}%) Matched</span>`;
                 let coreBadge = sub.isCore ? `<span class="badge badge-core">Core Subject</span>` : '';
+                let lcaBadge = sub.isLca ? `<span class="badge badge-lca">LCA</span>` : '';
+                let mseBadge = '';
                 let planMessage = '';
 
-                if (currentPhase === 'pre' && percentage < 75) {
+                // MSE Compliance status tag for Core non-LCA
+                if (isCoreNonLCA) {
+                    if (percentage >= 75) {
+                        const badgeBg = (currentPhase === 'pre') ? 'var(--success)' : 'var(--warning)';
+                        mseBadge = `<span class="badge" style="background-color: ${badgeBg}; color: white;">Meets 75% criteria for writing MSE</span>`;
+                    } else {
+                        mseBadge = `<span class="badge badge-danger">Not MSE Compliant (&lt; 75%)</span>`;
+                    }
+                }
+
+                if (currentPhase === 'pre' && isCoreNonLCA && percentage < 75) {
                     statusClass = 'status-danger';
                     statusBadge = '<span class="badge badge-danger">MSE Shortage De-barred</span>';
                 } else if (percentage < subTarget) {
@@ -696,7 +841,31 @@
                     statusBadge = `<span class="badge badge-warning">Below Target (${subTarget}%)</span>`;
                 }
 
-                // Short-term ongoing class guidance
+                // 1. MSE Minimum 75% Rule Planning (Pre-MSE mode & Core, non-LCA courses only)
+                if (currentPhase === 'pre' && isCoreNonLCA) {
+                    if (percentage >= 75) {
+                        let mseBunks = 0;
+                        let tempCond = sub.conducted;
+                        while (((subjectTotalAttended / (tempCond + 1)) * 100) >= 75) {
+                            tempCond++; mseBunks++;
+                        }
+                        planMessage += `<div style="margin-bottom: 6px; color: var(--success); font-weight: bold;">`;
+                        planMessage += `• <b>MSE Compliance:</b> You meet the 75% criteria to write MSE. You can safely bunk <b>${mseBunks} more hrs</b> before MSE without dropping below 75%.`;
+                        planMessage += `</div>`;
+                    } else {
+                        let mseFix = 0;
+                        let tempAtt = subjectTotalAttended;
+                        let tempCond = sub.conducted;
+                        while (((tempAtt / tempCond) * 100) < 75) {
+                            tempAtt++; tempCond++; mseFix++;
+                        }
+                        planMessage += `<div style="margin-bottom: 6px; color: var(--danger); font-weight: bold;">`;
+                        planMessage += `• <b>CRITICAL MSE REQUIREMENT:</b> You must attend the next <b>${mseFix} consecutive lectures</b> to reach 75% attendance to write the MSE.`;
+                        planMessage += `</div>`;
+                    }
+                }
+
+                // 2. Custom Target Planning
                 if (percentage < subTarget) {
                     let fixCount = 0;
                     let tempAtt = subjectTotalAttended;
@@ -711,10 +880,10 @@
                     while (((subjectTotalAttended / (tempCond + 1)) * 100) >= subTarget) {
                         tempCond++; skipCount++;
                     }
-                    planMessage += `• Target clear. You can skip the next <b>${skipCount} hrs</b> of this class safely.<br>`;
+                    planMessage += `• Subject Target clear. You can skip the next <b>${skipCount} hrs</b> of this class safely.<br>`;
                 }
 
-                // Total course projection calculation (Optional Feature)
+                // 3. Full Semester Max Course Hours Planning
                 if (sub.maxHours && sub.maxHours > 0) {
                     const reqAttended = Math.ceil((subTarget / 100) * sub.maxHours);
                     const maxBunksAllowed = sub.maxHours - reqAttended;
@@ -728,25 +897,17 @@
                     if (remainingBunks >= 0) {
                         planMessage += `• You can bunk <b>${remainingBunks} more hours</b> in total across the rest of the semester safely.`;
                     } else {
-                        planMessage += `<span style="color:var(--danger); font-weight:bold;">• Warning: You have exceeded the maximum bunk allowance for this entire course by ${Math.abs(remainingBunks)} hours!</span>`;
+                        planMessage += `<span style="color:var(--danger); font-weight:bold;">• Warning: You have exceeded maximum bunk allowance for this course by ${Math.abs(remainingBunks)} hours!</span>`;
                     }
                     planMessage += `</div>`;
                 }
 
-                if (currentPhase === 'pre' && percentage < 75) {
-                    let mseFix = 0;
-                    let tempAtt = subjectTotalAttended;
-                    let tempCond = sub.conducted;
-                    while (((tempAtt / tempCond) * 100) < 75) {
-                        tempAtt++; tempCond++; mseFix++;
-                    }
-                    planMessage += `<span style="color:var(--danger); font-weight:bold;">• CRITICAL: Attend next ${mseFix} lectures immediately to qualify for MSE!</span>`;
-                }
-
                 let marksInfo = '';
                 if (currentPhase === 'post' && sub.isCore) {
-                    const earned = getAttendanceMarks(parseFloat(percentage));
-                    marksInfo = `<div style="font-size: 0.95rem; font-weight: bold; color: #6b21a8; margin-top: 4px;">
+                    const earned = sub.customAttMarks !== "" && sub.customAttMarks !== null
+                        ? parseFloat(sub.customAttMarks)
+                        : getAttendanceMarks(parseFloat(percentage));
+                    marksInfo = `<div style="font-size: 0.95rem; font-weight: bold; color: var(--purple); margin-top: 4px;">
                         🎯 Current Attendance Marks: ${earned} / 5 Marks
                     </div>`;
                 }
@@ -766,10 +927,12 @@
                         ${sub.yellowHours > 0 ? `| <span style="color: #a16207; font-weight:bold;">Yellow Form: +${sub.yellowHours} hrs</span>` : ''}
                     </p>
                     <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;">
-                        Subject Percentage: <span style="color: ${ (currentPhase === 'pre' && percentage < 75) ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
+                        Subject Percentage: <span style="color: ${ (currentPhase === 'pre' && isCoreNonLCA && percentage < 75) ? 'var(--danger)' : percentage < subTarget ? 'var(--warning)' : 'var(--success)'}">${percentage}%</span> (Target: ${subTarget}%)
                     </div>
                     ${statusBadge}
                     ${coreBadge}
+                    ${lcaBadge}
+                    ${mseBadge}
                     ${marksInfo}
                     <div class="alert-box" style="background:#ffffff; border:1px solid #cbd5e1; margin-top:8px;">
                         ${planMessage}
@@ -778,6 +941,249 @@
             }
             listContainer.appendChild(card);
         });
+    }
+
+    /* DIRECT MANUAL ADDITION FROM MARKS TAB */
+    function addDirectSubjectForMarks() {
+        const name = document.getElementById('directSubName').value.trim();
+        const type = document.getElementById('directSubCourseType').value;
+
+        if (!name) return alert('Please enter a subject name.');
+
+        const isLca = (type === 'lca');
+        const existingIndex = subjects.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+
+        if (existingIndex > -1) {
+            subjects[existingIndex].isCore = true;
+            subjects[existingIndex].isLca = isLca;
+        } else {
+            subjects.push({
+                name, conducted: 0, present: 0, yellowHours: 0, target: 85, maxHours: null,
+                isCore: true, isLca: isLca, isEditing: false, addedCounter: 0, missedCounter: 0,
+                cia1: "", cia2: "", cia3: "", customAttMarks: ""
+            });
+        }
+
+        document.getElementById('directSubName').value = '';
+        saveAndRender();
+    }
+
+    /* RENDER ESE MARKS PREDICTOR TAB */
+    function renderMarksPredictor() {
+        const container = document.getElementById('marksPredictorContainer');
+        const eligibleSubjects = subjects.filter(s => s.isCore || s.isLca);
+
+        if (eligibleSubjects.length === 0) {
+            container.innerHTML = `<p style="color: var(--gray); text-align: center; padding: 30px 0;">No subjects found. Use the quick box above to add a course manually or add core subjects in Tab 1!</p>`;
+            return;
+        }
+
+        container.innerHTML = '';
+
+        eligibleSubjects.forEach((sub) => {
+            const index = subjects.findIndex(s => s.name === sub.name);
+            const card = document.createElement('div');
+            card.className = "card";
+            card.style.borderLeft = `6px solid ${sub.isLca ? '#0284c7' : 'var(--purple)'}`;
+
+            const subTotalAttended = sub.present + sub.yellowHours;
+            const percentage = sub.conducted > 0 ? ((subTotalAttended / sub.conducted) * 100).toFixed(1) : 0;
+            const autoAttMarks = getAttendanceMarks(parseFloat(percentage));
+            const currentAttVal = sub.customAttMarks !== "" && sub.customAttMarks !== null ? sub.customAttMarks : (sub.conducted > 0 ? autoAttMarks : "");
+
+            if (sub.isLca) {
+                // LCA SUBJECT PREDICTOR LOGIC
+                const c1 = sub.cia1 !== "" ? parseFloat(sub.cia1) : null;
+                const c2 = sub.cia2 !== "" ? parseFloat(sub.cia2) : null;
+                const attM = parseFloat(currentAttVal) || 0;
+
+                let internalsTotal = null;
+                if (c1 !== null && c2 !== null) {
+                    internalsTotal = c1 + c2 + attM; // Total out of 75
+                }
+
+                let gradeCardsHTML = '';
+                if (internalsTotal !== null) {
+                    GRADE_THRESHOLDS.forEach(gt => {
+                        const totalNeededOverall = gt.min;
+                        const neededFromEseHalved = totalNeededOverall - internalsTotal;
+                        const neededRawEse = neededNeededOutof50(neededFromEseHalved);
+
+                        let scoreDisplay = '';
+                        if (neededRawEse <= 0) {
+                            scoreDisplay = `<span style="color:var(--success);">Secured!</span>`;
+                        } else if (neededRawEse > 50) {
+                            scoreDisplay = `<span style="color:var(--danger);">Not Possible</span>`;
+                        } else {
+                            scoreDisplay = `<b>${neededRawEse.toFixed(1)}</b> / 50`;
+                        }
+
+                        gradeCardsHTML += `
+                            <div class="grade-box">
+                                <div class="grade-title">${gt.grade} Grade</div>
+                                <div class="grade-target">(${gt.min}%+)</div>
+                                <div class="grade-score">${scoreDisplay}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    gradeCardsHTML = `<p style="color:var(--gray); font-size:0.85rem; grid-column: 1/-1;">Enter CIA 1 and CIA 2 marks above to generate ESE targets.</p>`;
+                }
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0;">${sub.name} <span class="badge badge-lca">LCA Course</span></h3>
+                        <div class="action-container">
+                            <button class="action-btn delete-btn" onclick="deleteSubject(${index})">✕ Remove</button>
+                        </div>
+                    </div>
+                    <hr style="border: 0.5px solid #e2e8f0; margin: 10px 0 15px 0;">
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                        <div>
+                            <label style="font-size:0.75rem;">CIA 1 (out of 35)</label>
+                            <input type="number" id="pred-cia1-${index}" value="${sub.cia1}" placeholder="e.g. 28" min="0" max="35">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">CIA 2 (out of 35)</label>
+                            <input type="number" id="pred-cia2-${index}" value="${sub.cia2}" placeholder="e.g. 30" min="0" max="35">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Attendance (out of 5)</label>
+                            <input type="number" id="pred-att-${index}" value="${currentAttVal}" placeholder="e.g. 4" min="0" max="5">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:10px;">
+                        <button onclick="commitMarks(${index})" style="padding:8px; font-size:0.85rem; background:var(--primary);">Commit Marks & Calculate</button>
+                    </div>
+
+                    ${internalsTotal !== null ? `
+                        <div style="margin-top: 15px; font-weight: bold; font-size:0.9rem;">
+                            Current Secured Internals: <span style="color:var(--primary);">${internalsTotal.toFixed(1)} / 75 Marks</span>
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top: 15px;">
+                        <label style="font-size:0.85rem; font-weight:bold;">Required Score in End Sem Exam (Out of 50):</label>
+                        <div class="grade-grid">${gradeCardsHTML}</div>
+                    </div>
+                `;
+
+            } else {
+                // REGULAR CORE SUBJECT PREDICTOR LOGIC
+                const c1 = sub.cia1 !== "" ? parseFloat(sub.cia1) : null;
+                const c2 = sub.cia2 !== "" ? parseFloat(sub.cia2) : null;
+                const c3 = sub.cia3 !== "" ? parseFloat(sub.cia3) : null;
+                const attM = parseFloat(currentAttVal) || 0;
+
+                let internalsTotal = null;
+                if (c1 !== null && c2 !== null && c3 !== null) {
+                    const halved1 = c1 / 2;
+                    const halved2 = c2 / 2;
+                    const halved3 = c3 / 2;
+                    const rawInternals = halved1 + halved2 + halved3;
+                    const roundedInternals = Math.ceil(rawInternals);
+                    internalsTotal = roundedInternals + attM; // Total out of 50
+                }
+
+                let gradeCardsHTML = '';
+                if (internalsTotal !== null) {
+                    GRADE_THRESHOLDS.forEach(gt => {
+                        const totalNeededOverall = gt.min;
+                        const neededFromEseHalved = totalNeededOverall - internalsTotal;
+                        const neededRawEse = neededFromEseHalved * 2;
+
+                        let scoreDisplay = '';
+                        if (neededRawEse <= 0) {
+                            scoreDisplay = `<span style="color:var(--success);">Secured!</span>`;
+                        } else if (neededRawEse > 100) {
+                            scoreDisplay = `<span style="color:var(--danger);">Not Possible</span>`;
+                        } else {
+                            scoreDisplay = `<b>${neededRawEse.toFixed(1)}</b> / 100`;
+                        }
+
+                        gradeCardsHTML += `
+                            <div class="grade-box">
+                                <div class="grade-title">${gt.grade} Grade</div>
+                                <div class="grade-target">(${gt.min}%+)</div>
+                                <div class="grade-score">${scoreDisplay}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    gradeCardsHTML = `<p style="color:var(--gray); font-size:0.85rem; grid-column: 1/-1;">Enter CIA 1, CIA 2 (MSE), and CIA 3 marks above to generate ESE targets.</p>`;
+                }
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0;">${sub.name} <span class="badge badge-core">Core Course</span></h3>
+                        <div class="action-container">
+                            <button class="action-btn delete-btn" onclick="deleteSubject(${index})">✕ Remove</button>
+                        </div>
+                    </div>
+                    <hr style="border: 0.5px solid #e2e8f0; margin: 10px 0 15px 0;">
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
+                        <div>
+                            <label style="font-size:0.75rem;">CIA 1 (out of 20)</label>
+                            <input type="number" id="pred-cia1-${index}" value="${sub.cia1}" placeholder="e.g. 15" min="0" max="20">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">CIA 2 MSE (out of 50)</label>
+                            <input type="number" id="pred-cia2-${index}" value="${sub.cia2}" placeholder="e.g. 40" min="0" max="50">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">CIA 3 (out of 20)</label>
+                            <input type="number" id="pred-cia3-${index}" value="${sub.cia3}" placeholder="e.g. 18" min="0" max="20">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Attendance (out of 5)</label>
+                            <input type="number" id="pred-att-${index}" value="${currentAttVal}" placeholder="e.g. 4" min="0" max="5">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:10px;">
+                        <button onclick="commitMarks(${index})" style="padding:8px; font-size:0.85rem; background:var(--primary);">Commit Marks & Calculate</button>
+                    </div>
+
+                    ${internalsTotal !== null ? `
+                        <div style="margin-top: 15px; font-weight: bold; font-size:0.9rem;">
+                            Current Secured Internals: <span style="color:var(--primary);">${internalsTotal.toFixed(1)} / 50 Marks</span>
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top: 15px;">
+                        <label style="font-size:0.85rem; font-weight:bold;">Required Score in End Sem Exam (Out of 100):</label>
+                        <div class="grade-grid">${gradeCardsHTML}</div>
+                    </div>
+                `;
+            }
+
+            container.appendChild(card);
+        });
+    }
+
+    function neededNeededOutof50(neededHalved) {
+        return neededHalved * 2;
+    }
+
+    function commitMarks(index) {
+        const cia1Val = document.getElementById(`pred-cia1-${index}`).value;
+        const cia2Val = document.getElementById(`pred-cia2-${index}`).value;
+        const attVal = document.getElementById(`pred-att-${index}`).value;
+        
+        subjects[index].cia1 = cia1Val;
+        subjects[index].cia2 = cia2Val;
+        subjects[index].customAttMarks = attVal;
+
+        if (!subjects[index].isLca) {
+            const cia3Val = document.getElementById(`pred-cia3-${index}`).value;
+            subjects[index].cia3 = cia3Val;
+        }
+
+        saveAndRender();
+        renderMarksPredictor();
     }
 
     function toggleInlineEdit(index, editState) {
@@ -823,6 +1229,7 @@
         const finalPres = parseInt(document.getElementById(`editPres-${index}`).value) || 0;
         const maxH = parseInt(document.getElementById(`editMax-${index}`).value) || null;
         const isCoreChecked = document.getElementById(`editCore-${index}`).checked;
+        const isLcaChecked = document.getElementById(`editLca-${index}`).checked;
 
         if (finalPres > finalCond) {
             alert("Input logic boundary error: Attended class size metrics cannot logistically exceed total conducted hours.");
@@ -833,7 +1240,8 @@
         subjects[index].conducted = finalCond;
         subjects[index].present = finalPres;
         subjects[index].maxHours = maxH;
-        subjects[index].isCore = isCoreChecked;
+        subjects[index].isCore = isCoreChecked || isLcaChecked;
+        subjects[index].isLca = isLcaChecked;
         subjects[index].isEditing = false;
 
         saveAndRender();
@@ -846,7 +1254,8 @@
         const maxHoursVal = document.getElementById('maxHours').value;
         const maxHours = maxHoursVal ? parseInt(maxHoursVal) : null;
         const target = parseInt(document.getElementById('subTarget').value) || 85;
-        const isCore = document.getElementById('isCoreSubject').checked;
+        const isLca = document.getElementById('isLcaSubject').checked;
+        const isCore = document.getElementById('isCoreSubject').checked || isLca;
 
         if (!name) return alert('Subject name label missing.');
         if (present > conducted) return alert('Input error: Attended hours cannot exceed total classes conducted.');
@@ -858,8 +1267,13 @@
             subjects[existingIndex].target = target;
             subjects[existingIndex].maxHours = maxHours;
             subjects[existingIndex].isCore = isCore;
+            subjects[existingIndex].isLca = isLca;
         } else {
-            subjects.push({ name, conducted, present, yellowHours: 0, target, maxHours, isCore, isEditing: false, addedCounter: 0, missedCounter: 0 });
+            subjects.push({ 
+                name, conducted, present, yellowHours: 0, target, maxHours, isCore, isLca, 
+                isEditing: false, addedCounter: 0, missedCounter: 0,
+                cia1: "", cia2: "", cia3: "", customAttMarks: ""
+            });
         }
 
         saveAndRender();
@@ -868,6 +1282,7 @@
         document.getElementById('hoursPresent').value = '';
         document.getElementById('maxHours').value = '';
         document.getElementById('isCoreSubject').checked = false;
+        document.getElementById('isLcaSubject').checked = false;
     }
 
     function applyYellowForm() {
@@ -906,6 +1321,7 @@
         updateDropdowns();
         processGlobalCalculations();
         calculateSubjectWiseMetrics();
+        renderMarksPredictor();
     }
 
     saveAndRender();
